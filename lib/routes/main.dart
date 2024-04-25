@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_word_1/page/mainhome.dart';
 //import 'package:hello_word_1/page/samplepage.dart';
 // import 'package:perhitungan_volume/menu_page.dart';
 // import 'package:perhitungan_volume/sample.dart'; // Sesuaikan dengan nama paket aplikasi Anda
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      //home: SamplePage(),
+      home: MyRumah(),
     );
   }
 }

@@ -51,7 +51,7 @@ class _SettingScreenState extends State<SettingScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const AssetImageWidget(
-            imagePath: 'images/gng bromo.jpeg',
+            imagePath: 'images/Ft.jpeg',
             width: 300,
             height: 300,
             fit: BoxFit.cover,
