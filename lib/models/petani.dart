@@ -8,6 +8,7 @@ class Petani {
   final String? foto;
   final String? status;
   final String? namaKelompok;
+  
 
   const Petani({
     this.idPenjual,
@@ -34,4 +35,5 @@ class Petani {
       namaKelompok: json['nama_kelompok'],
     );
   }
+
 }

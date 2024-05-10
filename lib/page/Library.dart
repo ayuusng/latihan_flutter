@@ -16,7 +16,7 @@ class MyLibrary extends StatefulWidget {
 class _MyLibraryState extends State<MyLibrary> {
   late Future<List<Petani>> futurePetani;
 
-  final ApiService apiStatic = ApiService();
+  final APiService apiStatic = APiService();
   
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _MyLibraryState extends State<MyLibrary> {
 
   void _navigatetoPetaniPage(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => DatasScreen(futurePetani: futurePetani)));
+        builder: (_) => PetaniPage(futurePetani: futurePetani)));
   }
 
   @override

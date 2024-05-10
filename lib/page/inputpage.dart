@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hello_word_1/service/apiStatic.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:hello_word_1/routes/main.dart';
 import 'package:hello_word_1/models/kelompok.dart';
@@ -10,15 +10,14 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-class EditFormPetani extends StatefulWidget {
-  final Petani? petani;
-  const EditFormPetani({Key? key, this.petani}) : super(key: key);
+class InputFormPetani extends StatefulWidget {
+  const InputFormPetani({super.key});
 
   @override
-  _EditFormPetaniState createState() => _EditFormPetaniState();
+  _InputFormPetaniState createState() => _InputFormPetaniState();
 }
 
-class _EditFormPetaniState extends State<EditFormPetani> {
+class _InputFormPetaniState extends State<InputFormPetani> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _nik = '';
@@ -26,7 +25,7 @@ class _EditFormPetaniState extends State<EditFormPetani> {
   String _alamat = '';
   String _telp = '';
   String _idKelompok = '';
-  String _status = 'N';
+  String _status = 'inactive';
   String _fotoPath = '';
 
   final APiService apiService = APiService();
@@ -45,91 +44,45 @@ class _EditFormPetaniState extends State<EditFormPetani> {
     }
   }
 
-  // Method untuk memilih gambar dari galeri
-  Future<void> _pickImageFromGallery() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      setState(() {
-        _fotoPath = pickedImage.path;
-      });
-    }
-  }
+  // final List<KelompokPetani> _kelompokLis = [
+  //   KelompokPetani(idKelompokTani: '1', namaKelompok: 'Suda Mula'),
+  //   KelompokPetani(idKelompokTani: '2', namaKelompok: 'Sandi Merta'),
+  //   KelompokPetani(idKelompokTani: '3', namaKelompok: 'Jaya Mula'),
+  //   KelompokPetani(idKelompokTani: '4', namaKelompok: 'Sudiwana Mandiri'),
+  // ];
 
-  // method untuk fetching data kelompok tani
-  Future<void> _fetchKelompokTani() async {
-    try {
-      final response =
-          await http.get(Uri.parse('https://dev.wefgis.com/api/kelompoktani'));
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body) as List;
-        setState(() {
-          _kelompokList =
-              jsonData.map((item) => KelompokPetani.fromJson(item)).toList();
-          if (widget.petani != null) {
-            _selectedKelompok = _kelompokList.firstWhere(
-              (kelompok) =>
-                  kelompok.idKelompokTani == widget.petani!.idKelompokTani,
-              orElse: () => _kelompokList.first,
-            );
-          }
-        });
-      } else {
-        throw Exception('Failed to load data');
-      }
-    } catch (e) {
-      print('Error fetching data: $e');
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      // Lakukan sesuatu dengan data yang sudah diisi
+      print('Nama: $_nama');
+      print('NIK: $_nik');
+      print('Alamat: $_alamat');
+      print('Telepon: $_telp');
+      print('ID Kelompok Tani: $_idKelompok');
+      print('Status: $_status');
+      print('Foto Path: $_fotoPath');
     }
   }
 
   void _saveData() async {
     try {
-      if (_selectedKelompok == null) {
-        throw Exception('Pilih kelompok tani');
-      }
+      await APiService().createPetani(Petani(
+        idKelompokTani: _idKelompok,
+        nama: _nama,
+        nik: _nik,
+        alamat: _alamat,
+        telp: _telp,
+        foto: _fotoPath,
+        status: _status,
+      ));
+      Fluttertoast.showToast(
+        msg: 'Data berhasil ditambahkan',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
 
-      if (widget.petani == null) {
-        // Menambahkan data baru
-        await APiService.savePetani(
-          Petani(
-            idKelompokTani: _selectedKelompok!.idKelompokTani,
-            nama: _nama,
-            nik: _nik,
-            alamat: _alamat,
-            telp: _telp,
-            status: _status,
-          ),
-          _fotoPath,
-        );
-        Fluttertoast.showToast(
-          msg: 'Data berhasil ditambahkan',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-        );
-      } else {
-        // Mengedit data yang sudah ada
-        await APiService.editPetani(
-          widget.petani?.idPenjual,
-          Petani(
-            idKelompokTani: _selectedKelompok!.idKelompokTani,
-            nama: _nama,
-            nik: _nik,
-            alamat: _alamat,
-            telp: _telp,
-            status: _status,
-          ),
-          _fotoPath,
-        );
-        Fluttertoast.showToast(
-          msg: 'Data berhasil diperbarui',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-        );
-      }
       // Kembali ke halaman utama
       Navigator.pushReplacement(
         context,
@@ -148,27 +101,36 @@ class _EditFormPetaniState extends State<EditFormPetani> {
     }
   }
 
+  // method untuk fetching data kelompok tani
+  Future<void> _fetchKelompokTani() async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://dev.wefgis.com/api/kelompoktani'));
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body) as List;
+        setState(() {
+          _kelompokList =
+              jsonData.map((item) => KelompokPetani.fromJson(item)).toList();
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchKelompokTani();
-    if (widget.petani != null) {
-      _nik = widget.petani!.nik ?? '';
-      _nama = widget.petani!.nama ?? '';
-      _alamat = widget.petani!.alamat ?? '';
-      _telp = widget.petani!.telp ?? '';
-      _status = widget.petani!.status ?? '';
-      _idKelompok = widget.petani!.idKelompokTani ?? '';
-      _fotoPath = widget.petani!.foto ?? '';
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            widget.petani == null ? 'Input Form Petani' : 'Edit Form Petani'),
+        title: const Text('Input Form Petani'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -177,7 +139,6 @@ class _EditFormPetaniState extends State<EditFormPetani> {
           child: Column(
             children: [
               TextFormField(
-                initialValue: _nik,
                 decoration: const InputDecoration(labelText: 'NIK'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -189,7 +150,6 @@ class _EditFormPetaniState extends State<EditFormPetani> {
               ),
               const SizedBox(height: 20.0),
               TextFormField(
-                initialValue: _nama,
                 decoration: const InputDecoration(labelText: 'Nama'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -201,7 +161,6 @@ class _EditFormPetaniState extends State<EditFormPetani> {
               ),
               const SizedBox(height: 20.0),
               TextFormField(
-                initialValue: _alamat,
                 decoration: const InputDecoration(labelText: 'Alamat'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -213,7 +172,6 @@ class _EditFormPetaniState extends State<EditFormPetani> {
               ),
               const SizedBox(height: 20.0),
               TextFormField(
-                initialValue: _telp,
                 decoration: const InputDecoration(labelText: 'Telepon'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -230,17 +188,16 @@ class _EditFormPetaniState extends State<EditFormPetani> {
                 onChanged: (newValue) {
                   setState(() {
                     _selectedKelompok = newValue;
-                    _idKelompok = newValue!.idKelompokTani;
+                    _idKelompok = newValue!.idKelompokTani as String;
                   });
                 },
-                items: _kelompokList.map<DropdownMenuItem<KelompokPetani>>(
-                  (KelompokPetani kelompok) {
-                    return DropdownMenuItem<KelompokPetani>(
-                      value: kelompok,
-                      child: Text(kelompok.namaKelompok),
-                    );
-                  },
-                ).toList(),
+                items: _kelompokList
+                    .map<DropdownMenuItem<KelompokPetani>>((KelompokPetani kelompok) {
+                  return DropdownMenuItem<KelompokPetani>(
+                    value: kelompok,
+                    child: Text(kelompok.namaKelompok as String),
+                  );
+                }).toList(),
                 decoration: const InputDecoration(
                   labelText: 'Kelompok Tani',
                 ),
@@ -256,7 +213,7 @@ class _EditFormPetaniState extends State<EditFormPetani> {
               ListTile(
                 title: const Text("Inactive"),
                 leading: Radio<String>(
-                  value: "N",
+                  value: "inactive",
                   groupValue: _status,
                   onChanged: (value) {
                     setState(() {
@@ -268,7 +225,7 @@ class _EditFormPetaniState extends State<EditFormPetani> {
               ListTile(
                 title: const Text("Active"),
                 leading: Radio<String>(
-                  value: "Y",
+                  value: "active",
                   groupValue: _status,
                   onChanged: (value) {
                     setState(() {
@@ -278,48 +235,15 @@ class _EditFormPetaniState extends State<EditFormPetani> {
                 ),
               ),
               const SizedBox(height: 20.0),
-              _fotoPath != ''
-                  ? Image.file(
-                      // Menampilkan gambar yang dipilih
-                      File(_fotoPath),
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.error, color: Colors.red),
-                            Text('Gambar tidak dapat diakses'),
-                          ],
-                        );
-                      },
-                    )
-                  : Container(
-                      width: 200,
-                      height: 200,
-                      color: Colors.grey,
-                      child: Icon(
-                        Icons.image,
-                        size: 100,
-                        color: Colors.white,
-                      ),
-                    ),
-
-              const SizedBox(height: 20.0),
               Row(
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.photo_library),
-                    onPressed: _pickImageFromGallery,
-                  ),
                   Expanded(
                     child: TextFormField(
                       enabled: false,
-                      initialValue: _fotoPath,
                       decoration: const InputDecoration(
                         labelText: 'Foto',
                       ),
+                      controller: TextEditingController(text: _fotoPath),
                     ),
                   ),
                   IconButton(
@@ -333,12 +257,11 @@ class _EditFormPetaniState extends State<EditFormPetani> {
               const SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    _saveData();
-                  }
+                  _formKey.currentState!.save();
+                  // _submitForm();
+                  _saveData();
                 },
-                child: Text(widget.petani == null ? 'Submit' : 'Update'),
+                child: const Text('Submit'),
               ),
             ],
           ),

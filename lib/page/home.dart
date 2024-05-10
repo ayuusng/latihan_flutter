@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hello_word_1/page/write_screen.dart';
-import 'package:hello_word_1/page/about_screen.dart';
+// import 'package:hello_word_1/page/write_screen.dart';
+//import 'package:hello_word_1/page/about_screen.dart';
 
  // Import halaman about
 

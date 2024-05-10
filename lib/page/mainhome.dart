@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'package:hello_word_1/models/petani.dart';
 import 'package:hello_word_1/page/petaniPage.dart';
 import 'package:hello_word_1/page/write_screen.dart';
@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late Future<List<Petani>> futurePetani; // Perbaikan tipe data Future
 
-  final ApiService apiStatic = ApiService();
+  final APiService apiStatic = APiService();
 
   @override
   void initState() {
@@ -145,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => DatasScreen(futurePetani: futurePetani)),
+                  MaterialPageRoute(builder: (context) => PetaniPage(futurePetani: futurePetani)),
                 );
               },
             ),
