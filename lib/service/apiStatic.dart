@@ -169,7 +169,6 @@ class APiService {
         'Authorization': 'Bearer ' + _token,
       });
       var response = await request.send();
-
       if (response.statusCode == 200) {
         // return Petani.fromJson(jsonDecode(response.body));
         final respStr = await response.stream.bytesToString();
@@ -180,16 +179,11 @@ class APiService {
         return ErrorMSG.fromJson(jsonDecode(respStr));
         // return ErrorMSG.fromJson(jsonDecode(respStr));
       } else {
-        //return ErrorMSG.fromJson(jsonDecode(response.body));
-        // return ErrorMSG(success: false, message: 'err Request');
 
         throw Exception('Failed to update petani');
       }
     } catch (e) {
-      // ErrorMSG responseRequest =
-      //     ErrorMSG(success: false, message: 'error caught: $e');
-      // return responseRequest;
-      print(e);
+      
       throw Exception('Error $e');
     }
   }
