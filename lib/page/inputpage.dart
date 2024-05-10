@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:hello_word_1/routes/main.dart';
 import 'package:hello_word_1/models/kelompok.dart';
 import 'package:hello_word_1/models/petani.dart';
-import 'package:hello_word_1/service/apiStatic.dart';
+//import 'package:hello_word_1/service/apiStatic.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';

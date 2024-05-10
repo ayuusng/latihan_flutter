@@ -86,9 +86,11 @@ class APiService {
       if (filepath != '') {
         request.files.add(await http.MultipartFile.fromPath('foto', filepath));
       }
+
       request.headers.addAll({
         'Authorization': 'Bearer ' + _token,
       });
+
       var response = await request.send();
 
       if (response.statusCode == 200) {
@@ -133,16 +135,20 @@ class APiService {
           await http.get(Uri.parse("$host/api/kelompoktani"), headers: {
         'Authorization': 'Bearer ' + _token,
       });
+
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         final parsed = json.cast<Map<String, dynamic>>();
         return parsed
             .map<KelompokPetani>((json) => KelompokPetani.fromJson(json))
             .toList();
+
       } else {
+
         return [];
       }
     } catch (e) {
+
       return [];
     }
   }
@@ -168,6 +174,7 @@ class APiService {
       request.headers.addAll({
         'Authorization': 'Bearer ' + _token,
       });
+
       var response = await request.send();
       if (response.statusCode == 200) {
         // return Petani.fromJson(jsonDecode(response.body));
@@ -179,10 +186,15 @@ class APiService {
         return ErrorMSG.fromJson(jsonDecode(respStr));
         // return ErrorMSG.fromJson(jsonDecode(respStr));
       } else {
+        //return ErrorMSG.fromJson(jsonDecode(response.body));
+        // return ErrorMSG(success: false, message: 'err Request');
 
         throw Exception('Failed to update petani');
       }
     } catch (e) {
+       // ErrorMSG responseRequest =
+      //     ErrorMSG(success: false, message: 'error caught: $e');
+      // return responseRequest;
       
       throw Exception('Error $e');
     }
